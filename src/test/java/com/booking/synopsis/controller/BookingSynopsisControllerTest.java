@@ -1,0 +1,90 @@
+package com.booking.synopsis.controller;
+
+import com.booking.synopsis.BookingSynopsisApplication;
+import com.booking.synopsis.exceptions.GlobalExceptionHandler;
+import com.booking.synopsis.exceptions.InvalidRequestResourceException;
+import com.booking.synopsis.request.BookingSynopsisRequestResource;
+import com.booking.synopsis.response.SynopsisErrorResponseTestBuilder;
+import com.booking.synopsis.validation.ValidationChecker;
+import com.booking.synopsis.validation.ValidationError;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.Collections;
+
+import static com.booking.synopsis.utils.BookingSynopsisUrls.BOOK_SYNOPSIS_ENDPOINT;
+import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
+import static net.javacrumbs.jsonunit.core.Option.IGNORING_VALUES;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = BookingSynopsisApplication.class)
+@SpringBootTest()
+public class BookingSynopsisControllerTest {
+
+    @Mock
+    private ValidationChecker validationChecker;
+
+    @InjectMocks
+    private BookingSynopsisController bookingSynopsisController;
+
+    private MockMvc mvc;
+    private SynopsisErrorResponseTestBuilder synopsisErrorResponseTestBuilder;
+
+    @Before
+    public void setUp() {
+        mvc = MockMvcBuilders
+                .standaloneSetup(bookingSynopsisController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
+        synopsisErrorResponseTestBuilder = new SynopsisErrorResponseTestBuilder();
+    }
+
+    @Test
+    public void shouldReturn422StatusIfRequestBodyIsInvalidWhenBookingNewSynopsis() throws Exception {
+        //given
+        BookingSynopsisRequestResource bookingSynopsisRequestResource = new BookingSynopsisRequestResource();
+        doThrow(new InvalidRequestResourceException(
+                Collections.singletonList(new ValidationError("movieName", "Invalid movie name")),
+                "Invalid movie name"
+        )).when(validationChecker).validate(any());
+
+        //when
+        ResultActions response = mvc.perform(post(BOOK_SYNOPSIS_ENDPOINT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(bookingSynopsisRequestResource))
+        );
+
+        //then
+        response.andExpect(status().is(422));
+        assertJsonEquals(
+                asJsonString(synopsisErrorResponseTestBuilder.build()),
+                response.andReturn().getResponse().getContentAsString(),
+                net.javacrumbs.jsonunit.JsonAssert.when(IGNORING_VALUES)
+        );
+    }
+
+    private String asJsonString(final Object obj) {
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+}

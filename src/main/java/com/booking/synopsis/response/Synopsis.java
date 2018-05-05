@@ -1,5 +1,6 @@
 package com.booking.synopsis.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,8 @@ import lombok.NoArgsConstructor;
 public class Synopsis {
 
     private String synopsis;
-    private String audio_link;
+
+    @JsonProperty("audio_link")
+    private String audioLink;
 
 }

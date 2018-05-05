@@ -4,7 +4,11 @@ import com.booking.synopsis.BookingSynopsisApplication;
 import com.booking.synopsis.exceptions.GlobalExceptionHandler;
 import com.booking.synopsis.exceptions.InvalidRequestResourceException;
 import com.booking.synopsis.request.BookingSynopsisRequestResource;
+import com.booking.synopsis.request.BookingSynopsisRequestResourceTestBuilder;
+import com.booking.synopsis.response.Synopsis;
 import com.booking.synopsis.response.SynopsisErrorResponseTestBuilder;
+import com.booking.synopsis.response.SynopsisTestBuilder;
+import com.booking.synopsis.service.BookingSynopsisService;
 import com.booking.synopsis.validation.ValidationChecker;
 import com.booking.synopsis.validation.ValidationError;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +32,8 @@ import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_VALUES;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,11 +45,16 @@ public class BookingSynopsisControllerTest {
     @Mock
     private ValidationChecker validationChecker;
 
+    @Mock
+    private BookingSynopsisService bookingSynopsisService;
+
     @InjectMocks
     private BookingSynopsisController bookingSynopsisController;
 
     private MockMvc mvc;
     private SynopsisErrorResponseTestBuilder synopsisErrorResponseTestBuilder;
+    private BookingSynopsisRequestResourceTestBuilder bookingSynopsisRequestResourceTestBuilder;
+    private SynopsisTestBuilder synopsisTestBuilder;
 
     @Before
     public void setUp() {
@@ -52,12 +63,16 @@ public class BookingSynopsisControllerTest {
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
         synopsisErrorResponseTestBuilder = new SynopsisErrorResponseTestBuilder();
+        bookingSynopsisRequestResourceTestBuilder = new BookingSynopsisRequestResourceTestBuilder();
+        synopsisTestBuilder = new SynopsisTestBuilder();
     }
 
     @Test
     public void shouldReturn422StatusIfRequestBodyIsInvalidWhenBookingNewSynopsis() throws Exception {
         //given
-        BookingSynopsisRequestResource bookingSynopsisRequestResource = new BookingSynopsisRequestResource();
+        BookingSynopsisRequestResource bookingSynopsisRequestResource = bookingSynopsisRequestResourceTestBuilder
+                .withMovieName(null)
+                .build();
         doThrow(new InvalidRequestResourceException(
                 Collections.singletonList(new ValidationError("movieName", "Invalid movie name")),
                 "Invalid movie name"
@@ -73,6 +88,29 @@ public class BookingSynopsisControllerTest {
         response.andExpect(status().is(422));
         assertJsonEquals(
                 asJsonString(synopsisErrorResponseTestBuilder.build()),
+                response.andReturn().getResponse().getContentAsString(),
+                net.javacrumbs.jsonunit.JsonAssert.when(IGNORING_VALUES)
+        );
+    }
+
+    @Test
+    public void shouldReturn201StatusWhenBookingNewSynopsis() throws Exception {
+        //given
+        BookingSynopsisRequestResource bookingSynopsisRequestResource = bookingSynopsisRequestResourceTestBuilder.build();
+        Synopsis expectedSynopsisResponse = synopsisTestBuilder.build();
+        when(bookingSynopsisService.save(any())).thenReturn(expectedSynopsisResponse);
+
+        //when
+        ResultActions response = mvc.perform(post(BOOK_SYNOPSIS_ENDPOINT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(bookingSynopsisRequestResource))
+        );
+
+        //then
+        verify(bookingSynopsisService).save(bookingSynopsisRequestResource.getMovieName());
+        response.andExpect(status().is(201));
+        assertJsonEquals(
+                asJsonString(expectedSynopsisResponse),
                 response.andReturn().getResponse().getContentAsString(),
                 net.javacrumbs.jsonunit.JsonAssert.when(IGNORING_VALUES)
         );

@@ -1,4 +1,4 @@
-package com.booking.synopsis.bookingsynopsis;
+package com.booking.synopsis;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

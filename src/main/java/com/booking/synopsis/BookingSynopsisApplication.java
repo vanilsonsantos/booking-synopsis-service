@@ -1,4 +1,4 @@
-package com.booking.synopsis.bookingsynopsis;
+package com.booking.synopsis;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

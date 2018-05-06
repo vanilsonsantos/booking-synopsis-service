@@ -26,12 +26,12 @@ public class MovieDbClientTest {
 
     private MovieDbClient movieDbClient;
     private final String API_KEY = "test-key";
-    private final String HOST = "http://localhost:4444";
     private String URL = "/3/search/movie?api_key=%s&query=%s";
 
     @Before
     public void setUp() {
-        movieDbClient = new MovieDbClient(new RestTemplate(), HOST, API_KEY);
+        String host = "http://localhost:4444";
+        movieDbClient = new MovieDbClient(new RestTemplate(), host, API_KEY);
         movieDbDtoTestBuilder = new MovieDbDtoTestBuilder();
     }
 

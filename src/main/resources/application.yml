@@ -6,3 +6,9 @@ moviedb:
   host: http://api.themoviedb.org
   api:
     key: ENC(uOM4hz9ileVsxNpm60/9h5dgrY4/VREZNXZ7eTyunsBoPlBkmW8UD8TcoM5k5woG)
+
+voicebunny:
+  host: https://api.voicebunny.com
+  api:
+    user: 131231
+    key: ENC(xeC0Bw1vYo1ghYpVtSDl7+Obfd2scI6laoSQXxMT70aFHvpKqHUBH/WTtV30Iezn)

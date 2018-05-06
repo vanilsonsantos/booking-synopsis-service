@@ -1,3 +1,9 @@
+info:
+  app:
+    name: Spring Sample Application
+    description: This is my first spring boot application
+    version: 1.0.0
+
 server:
   servlet:
     context-path: /booking

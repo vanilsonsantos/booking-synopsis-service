@@ -1,0 +1,6 @@
+spring:
+  application:
+      name: telecom-platform
+  cloud:
+      config:
+          uri: http://cloud-configuration-server.herokuapp.com

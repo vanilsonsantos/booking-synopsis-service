@@ -1,5 +1,6 @@
 package com.booking.synopsis.controller;
 
+import com.booking.synopsis.exceptions.ExternalServiceException;
 import com.booking.synopsis.exceptions.InvalidRequestResourceException;
 import com.booking.synopsis.request.BookingSynopsisRequestResource;
 import com.booking.synopsis.service.BookingSynopsisService;
@@ -27,7 +28,7 @@ public class BookingSynopsisController {
 
     @RequestMapping(value = BOOK_SYNOPSIS_ENDPOINT, method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity bookSynopsis(@RequestBody BookingSynopsisRequestResource bookingSynopsisRequestResource) throws InvalidRequestResourceException {
+    public ResponseEntity bookSynopsis(@RequestBody BookingSynopsisRequestResource bookingSynopsisRequestResource) throws InvalidRequestResourceException, ExternalServiceException {
         validationChecker.validate(bookingSynopsisRequestResource);
         return new ResponseEntity(
                 bookingSynopsisService.save(bookingSynopsisRequestResource.getMovieName()),

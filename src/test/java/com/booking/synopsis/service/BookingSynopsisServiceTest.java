@@ -1,7 +1,8 @@
 package com.booking.synopsis.service;
 
-import com.booking.synopsis.client.OmdbClient;
+import com.booking.synopsis.client.MovieDbClient;
 import com.booking.synopsis.client.VoiceBunnyClient;
+import com.booking.synopsis.exceptions.ExternalServiceException;
 import com.booking.synopsis.response.Synopsis;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +16,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class BookingSynopsisServiceTest {
 
     @Mock
-    private OmdbClient omdbClient;
+    private MovieDbClient movieDbClient;
 
     @Mock
     private VoiceBunnyClient voiceBunnyClient;
@@ -25,16 +26,16 @@ public class BookingSynopsisServiceTest {
     @Before
     public void setUp() {
         initMocks(this);
-        bookingSynopsisService = new BookingSynopsisService(omdbClient, voiceBunnyClient);
+        bookingSynopsisService = new BookingSynopsisService(movieDbClient, voiceBunnyClient);
     }
 
     @Test
-    public void shouldSaveAndReturnTheBookedSynopsis() {
+    public void shouldSaveAndReturnTheBookedSynopsis() throws ExternalServiceException {
         //given
         String expectedMovieName = "child's play";
         String expectedSynopsis = "This is my synopsis";
         String expectedAudioLink = "https://voicebunny.s3.amazonaws.com/sandbox/low_test.mp3";
-        when(omdbClient.getSynopsis(expectedMovieName)).thenReturn(expectedSynopsis);
+        when(movieDbClient.getSynopsis(expectedMovieName)).thenReturn(expectedSynopsis);
         when(voiceBunnyClient.bookSynopsis(expectedSynopsis)).thenReturn(expectedAudioLink);
 
         //when

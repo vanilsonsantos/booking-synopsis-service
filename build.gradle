@@ -29,6 +29,8 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile("org.springframework.boot:spring-boot-starter-web")
 	compile("net.javacrumbs.json-unit:json-unit:1.28.2")
+	compile("com.github.ulisesbocchio:jasypt-spring-boot-starter:1.15")
 	compile("org.projectlombok:lombok:1.16.20")
+	testCompile("com.github.tomakehurst:wiremock:1.58")
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

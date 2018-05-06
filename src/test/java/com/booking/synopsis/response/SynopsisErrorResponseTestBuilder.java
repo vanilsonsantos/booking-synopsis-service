@@ -13,6 +13,11 @@ public class SynopsisErrorResponseTestBuilder {
             new ValidationError("movieName", "invalid movieName")
     );
 
+    public SynopsisErrorResponseTestBuilder withErrors(List<ValidationError> errors) {
+        this.errors = errors;
+        return this;
+    }
+
     public SynopsisErrorResponse build() {
         return new SynopsisErrorResponse(
                 code,

@@ -1,3 +1,8 @@
 server:
   servlet:
     context-path: /booking
+
+moviedb:
+  host: http://api.themoviedb.org
+  api:
+    key: ENC(uOM4hz9ileVsxNpm60/9h5dgrY4/VREZNXZ7eTyunsBoPlBkmW8UD8TcoM5k5woG)

@@ -18,4 +18,14 @@ public class GlobalExceptionHandler {
                 )
         );
     }
+
+    @ExceptionHandler(ExternalServiceException.class)
+    public ResponseEntity handleExternalServiceException(ExternalServiceException ex) {
+        SynopsisErrorResponse synopsisErrorResponse = new SynopsisErrorResponse(
+                HttpStatus.FAILED_DEPENDENCY.value(),
+                ex.getCause().getMessage(),
+                null
+        );
+        return new ResponseEntity(synopsisErrorResponse, HttpStatus.FAILED_DEPENDENCY);
+    }
 }

@@ -1,7 +1,7 @@
 info:
   app:
-    name: Spring Sample Application
-    description: This is my first spring boot application
+    name: Booking Synopsis Application
+    description: Application to book synopsis at VoiceBunny
     version: 1.0.0
 
 server:
